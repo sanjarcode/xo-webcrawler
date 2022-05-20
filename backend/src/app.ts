@@ -33,7 +33,7 @@ export class App {
 
     queue.enqueue(appParameters.url)
     while (!queue.isEmpty()) {
-      const currentUrl: string = `${queue.dequeue()}`
+      const currentUrl: string = `${queue.dequeue() ?? ''}`
       // console.log(currentUrl, count)
       seen.add(currentUrl)
       const extractedText = await this.urlLoader.loadUrlTextAndLinks(
