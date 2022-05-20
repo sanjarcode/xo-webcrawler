@@ -35,18 +35,29 @@ export class App {
     queue.enqueue(appParameters.url);
     while (!queue.isEmpty()) {
       const currentUrl = `${queue.dequeue()}`;
+      // console.log(currentUrl, count);
       seen.add(currentUrl);
-
       const extractedText = await this.urlLoader.loadUrlTextAndLinks(
         currentUrl
       );
       count += (extractedText.text.toLocaleLowerCase().match(/kayako/gi) ?? [])
         .length;
 
-      // enqueue other links
+      // sanitize content links
+      const links = new Set(
+        extractedText.links.map((unsanitizedLink) => {
+          unsanitizedLink.replace("www.", ""); // subdomain sanitization
+
+          const hashIndex = unsanitizedLink.indexOf("#"); // content page sanitization
+          if (hashIndex == -1) return unsanitizedLink;
+          return unsanitizedLink.substring(0, hashIndex);
+        })
+      );
+
       if (maxlevel < appParameters.level) {
-        for (let link of extractedText.links) {
-          if (!(link in seen)) queue.enqueue(link);
+        for (let link of links) {
+          if (!seen.has(link)) queue.enqueue(link);
+          // else console.log("Seen", link);
         }
         maxlevel++;
       }
