@@ -40,8 +40,11 @@ export class App {
       const extractedText = await this.urlLoader.loadUrlTextAndLinks(
         currentUrl
       );
-      count += (extractedText.text.toLocaleLowerCase().match(/kayako/gi) ?? [])
-        .length;
+      count += (
+        extractedText.text
+          .toLocaleLowerCase()
+          .match(new RegExp(appParameters.word, "gi")) ?? []
+      ).length;
 
       // sanitize content links
       const links = new Set(
