@@ -45,7 +45,7 @@ export class App {
 
       // enqueue other links
       if (maxlevel < appParameters.level) {
-        for (let link in extractedText.links) {
+        for (let link of extractedText.links) {
           if (!(link in seen)) queue.enqueue(link);
         }
         maxlevel++;
