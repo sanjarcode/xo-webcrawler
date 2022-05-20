@@ -10,7 +10,7 @@ interface AppParameters {
 
 export const DEFAULT_URL = 'https://www.kayako.com/'
 export const DEFAULT_WORD = 'kayako'
-export const DEFAULT_LEVEL = '2'
+export const DEFAULT_LEVEL = '1'
 
 export class App {
   /* istanbul ignore next */
@@ -34,7 +34,6 @@ export class App {
     while (!queue.isEmpty()) {
       const [currentUrl, currentLevel]: [string, number] = queue.dequeue() ?? ['', 0]
       // console.log(currentUrl, count)
-      seen.add(currentUrl)
       const extractedText = await this.urlLoader.loadUrlTextAndLinks(
         currentUrl
       )
