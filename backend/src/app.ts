@@ -10,7 +10,7 @@ interface AppParameters {
 
 export const DEFAULT_URL = 'https://www.kayako.com/'
 export const DEFAULT_WORD = 'kayako'
-export const DEFAULT_LEVEL = '0'
+export const DEFAULT_LEVEL = '2'
 
 export class App {
   /* istanbul ignore next */
