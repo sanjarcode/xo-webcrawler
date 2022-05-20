@@ -27,18 +27,11 @@ export class App {
   }
 
   async process(appParameters: AppParameters): Promise<void> {
-    // const extractedText = await this.urlLoader.loadUrlTextAndLinks(
-    //   appParameters.url
-    // );
-    // const count = (
-    //   extractedText.text.toLocaleLowerCase().match(/kayako/gi) ?? []
-    // ).length;
-    // this.wordCount++;
+    const queue = new Queue(),
+      seen = new Set(); // avoid cycles
+    let count = 0,
+      maxlevel = 0;
 
-    const queue = new Queue();
-    const seen = new Set(); // avoid cycles
-    let count = 0;
-    let maxlevel = 0;
     queue.enqueue(appParameters.url);
     while (!queue.isEmpty()) {
       const currentUrl = `${queue.dequeue()}`;
