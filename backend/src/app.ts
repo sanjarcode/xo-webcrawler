@@ -39,7 +39,6 @@ export class App {
   parseCli(argv: readonly string[] = process.argv): AppParameters {
     this.command.requiredOption("-u, --url <url>", "URL to load", DEFAULT_URL);
     this.command.option("-w, --word <word>", "Word to match", DEFAULT_WORD);
-
     this.command.option(
       "-l, --level <level>",
       "Level to look at",
@@ -48,7 +47,7 @@ export class App {
 
     this.command.parse(argv);
     const options = this.command.opts();
-    console.log({ url: options.url, word: options.word, level: options.level });
+
     return { url: options.url, word: options.word, level: options.level };
   }
 }
