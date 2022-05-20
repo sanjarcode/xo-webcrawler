@@ -26,14 +26,13 @@ export class App {
   }
 
   async process (appParameters: AppParameters): Promise<void> {
-    const queue: Queue<string> = new Queue()
+    const queue: Queue<[string, number]> = new Queue()
     const seen = new Set() // avoid cycles
     let count = 0
-    let maxlevel = 0
 
-    queue.enqueue(appParameters.url)
+    queue.enqueue([appParameters.url, 0])
     while (!queue.isEmpty()) {
-      const currentUrl: string = `${queue.dequeue() ?? ''}`
+      const [currentUrl, currentLevel]: [string, number] = queue.dequeue() ?? ['', 0]
       // console.log(currentUrl, count)
       seen.add(currentUrl)
       const extractedText = await this.urlLoader.loadUrlTextAndLinks(
@@ -56,12 +55,11 @@ export class App {
         })
       )
 
-      if (maxlevel < appParameters.level) {
+      if (currentLevel < appParameters.level) {
         for (const link of links) {
-          if (!seen.has(link)) queue.enqueue(link)
+          if (!seen.has(link)) { queue.enqueue([link, currentLevel + 1]); seen.add(link) }
           // else console.log('Seen', link)
         }
-        maxlevel++
       }
     }
 
