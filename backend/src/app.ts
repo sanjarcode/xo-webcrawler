@@ -1,87 +1,87 @@
-import { UrlLoaderService } from "./services/url-loader.service.js";
-import { Command } from "commander";
-import Queue from "queue-fifo";
+import { UrlLoaderService } from './services/url-loader.service.js'
+import { Command } from 'commander'
+import Queue from 'queue-fifo'
 
 interface AppParameters {
-  url: string;
-  word: string;
-  level: number;
+  url: string
+  word: string
+  level: number
 }
 
-export const DEFAULT_URL = "https://www.kayako.com/";
-export const DEFAULT_WORD = "kayako";
-export const DEFAULT_LEVEL = "0";
+export const DEFAULT_URL = 'https://www.kayako.com/'
+export const DEFAULT_WORD = 'kayako'
+export const DEFAULT_LEVEL = '0'
 
 export class App {
   /* istanbul ignore next */
-  constructor(
+  constructor (
     private readonly urlLoader: UrlLoaderService,
     private readonly command = new Command()
   ) {}
 
-  async run(): Promise<void> {
-    const appParameters = this.parseCli();
+  async run (): Promise<void> {
+    const appParameters = this.parseCli()
 
-    await this.process(appParameters);
+    await this.process(appParameters)
   }
 
-  async process(appParameters: AppParameters): Promise<void> {
-    const queue = new Queue(),
-      seen = new Set(); // avoid cycles
-    let count = 0,
-      maxlevel = 0;
+  async process (appParameters: AppParameters): Promise<void> {
+    const queue: Queue<string> = new Queue()
+    const seen = new Set() // avoid cycles
+    let count = 0
+    let maxlevel = 0
 
-    queue.enqueue(appParameters.url);
+    queue.enqueue(appParameters.url)
     while (!queue.isEmpty()) {
-      const currentUrl = `${queue.dequeue()}`;
-      // console.log(currentUrl, count);
-      seen.add(currentUrl);
+      const currentUrl: string = `${queue.dequeue()}`
+      // console.log(currentUrl, count)
+      seen.add(currentUrl)
       const extractedText = await this.urlLoader.loadUrlTextAndLinks(
         currentUrl
-      );
+      )
       count += (
         extractedText.text
           .toLocaleLowerCase()
-          .match(new RegExp(appParameters.word, "gi")) ?? []
-      ).length;
+          .match(new RegExp(appParameters.word, 'gi')) ?? []
+      ).length
 
       // sanitize content links
       const links = new Set(
         extractedText.links.map((unsanitizedLink) => {
-          unsanitizedLink.replace("www.", ""); // subdomain sanitization
+          unsanitizedLink = unsanitizedLink.replace('www.', '') // subdomain sanitization
 
-          const hashIndex = unsanitizedLink.indexOf("#"); // content page sanitization
-          if (hashIndex == -1) return unsanitizedLink;
-          return unsanitizedLink.substring(0, hashIndex);
+          const hashIndex = unsanitizedLink.indexOf('#') // content page sanitization
+          if (hashIndex === -1) return unsanitizedLink
+          return unsanitizedLink.substring(0, hashIndex)
         })
-      );
+      )
 
       if (maxlevel < appParameters.level) {
-        for (let link of links) {
-          if (!seen.has(link)) queue.enqueue(link);
-          // else console.log("Seen", link);
+        for (const link of links) {
+          if (!seen.has(link)) queue.enqueue(link)
+          // else console.log('Seen', link)
         }
-        maxlevel++;
+        maxlevel++
       }
     }
 
     console.log(
       `Found ${count} instances of '${appParameters.word}' in the body of the page`
-    );
+    )
   }
 
-  parseCli(argv: readonly string[] = process.argv): AppParameters {
-    this.command.requiredOption("-u, --url <url>", "URL to load", DEFAULT_URL);
-    this.command.option("-w, --word <word>", "Word to match", DEFAULT_WORD);
+  parseCli (argv: readonly string[] = process.argv): AppParameters {
+    this.command.requiredOption('-u, --url <url>', 'URL to load', DEFAULT_URL)
+    this.command.option('-w, --word <word>', 'Word to match', DEFAULT_WORD)
     this.command.option(
-      "-l, --level <level>",
-      "Level to look at",
+      '-l, --level <level>',
+      'Level to look at',
       DEFAULT_LEVEL
-    );
+    )
 
-    this.command.parse(argv);
-    const options = this.command.opts();
+    this.command.parse(argv)
+    const options = this.command.opts()
 
-    return { url: options.url, word: options.word, level: options.level };
+    return { url: options.url, word: options.word, level: options.level }
   }
 }
