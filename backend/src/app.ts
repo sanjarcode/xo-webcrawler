@@ -16,8 +16,7 @@ export class App {
   /* istanbul ignore next */
   constructor(
     private readonly urlLoader: UrlLoaderService,
-    private readonly command = new Command(),
-    private wordCount = 0
+    private readonly command = new Command()
   ) {}
 
   async run(): Promise<void> {
@@ -67,7 +66,7 @@ export class App {
     }
 
     console.log(
-      `Found ${count} instances of '${appParameters.word}' in the body of the page '${appParameters.url}', max level ${appParameters.level}`
+      `Found ${count} instances of '${appParameters.word}' in the body of the page`
     );
   }
 
