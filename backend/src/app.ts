@@ -1,5 +1,6 @@
 import { UrlLoaderService } from "./services/url-loader.service.js";
 import { Command } from "commander";
+import Queue from "queue-fifo";
 
 interface AppParameters {
   url: string;
@@ -9,13 +10,14 @@ interface AppParameters {
 
 export const DEFAULT_URL = "https://www.kayako.com/";
 export const DEFAULT_WORD = "kayako";
-export const DEFAULT_LEVEL = "1";
+export const DEFAULT_LEVEL = "0";
 
 export class App {
   /* istanbul ignore next */
   constructor(
     private readonly urlLoader: UrlLoaderService,
-    private readonly command = new Command()
+    private readonly command = new Command(),
+    private wordCount = 0
   ) {}
 
   async run(): Promise<void> {
@@ -25,12 +27,38 @@ export class App {
   }
 
   async process(appParameters: AppParameters): Promise<void> {
-    const extractedText = await this.urlLoader.loadUrlTextAndLinks(
-      appParameters.url
-    );
-    const count = (
-      extractedText.text.toLocaleLowerCase().match(/kayako/gi) ?? []
-    ).length;
+    // const extractedText = await this.urlLoader.loadUrlTextAndLinks(
+    //   appParameters.url
+    // );
+    // const count = (
+    //   extractedText.text.toLocaleLowerCase().match(/kayako/gi) ?? []
+    // ).length;
+    // this.wordCount++;
+
+    const queue = new Queue();
+    const seen = new Set(); // avoid cycles
+    let count = 0;
+    let maxlevel = 0;
+    queue.enqueue(appParameters.url);
+    while (!queue.isEmpty()) {
+      const currentUrl = `${queue.dequeue()}`;
+      seen.add(currentUrl);
+
+      const extractedText = await this.urlLoader.loadUrlTextAndLinks(
+        currentUrl
+      );
+      count += (extractedText.text.toLocaleLowerCase().match(/kayako/gi) ?? [])
+        .length;
+
+      // enqueue other links
+      if (maxlevel < appParameters.level) {
+        for (let link in extractedText.links) {
+          if (!(link in seen)) queue.enqueue(link);
+        }
+        maxlevel++;
+      }
+    }
+
     console.log(
       `Found ${count} instances of '${appParameters.word}' in the body of the page '${appParameters.url}', at max level ${appParameters.level}`
     );
