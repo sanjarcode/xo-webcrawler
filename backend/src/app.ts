@@ -53,7 +53,7 @@ export class App {
     }
 
     console.log(
-      `Found ${count} instances of '${appParameters.word}' in the body of the page '${appParameters.url}', at max level ${appParameters.level}`
+      `Found ${count} instances of '${appParameters.word}' in the body of the page '${appParameters.url}', max level ${appParameters.level}`
     );
   }
 
