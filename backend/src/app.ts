@@ -45,13 +45,7 @@ export class App {
 
       // sanitize content links
       const links = new Set(
-        extractedText.links.map((unsanitizedLink) => {
-          unsanitizedLink = unsanitizedLink.replace('www.', '') // subdomain sanitization
-
-          const hashIndex = unsanitizedLink.indexOf('#') // content page sanitization
-          if (hashIndex === -1) return unsanitizedLink
-          return unsanitizedLink.substring(0, hashIndex)
-        })
+        extractedText.links.map(this.sanitizeLink)
       )
 
       if (currentLevel < appParameters.level) {
@@ -65,6 +59,14 @@ export class App {
     console.log(
       `Found ${count} instances of '${appParameters.word}' in the body of the page`
     )
+  }
+
+  sanitizeLink (unsanitizedLink: string): string {
+    unsanitizedLink = unsanitizedLink.replace('www.', '') // subdomain sanitization
+
+    const hashIndex = unsanitizedLink.indexOf('#') // content page sanitization
+    if (hashIndex === -1) return unsanitizedLink
+    return unsanitizedLink.substring(0, hashIndex)
   }
 
   parseCli (argv: readonly string[] = process.argv): AppParameters {
