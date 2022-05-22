@@ -53,4 +53,16 @@ describe('App', () => {
     expect(app.parseCli(['node', 'main.js', '--url', url]).url).toBe(url)
     expect(app.parseCli(['node', 'main.js', '-u', url]).url).toBe(url)
   })
+
+  describe('sanitizeLink function', () => {
+    it('clears out www subdomain', () => {
+      const unsanitizedLink = 'https://www.google.com'
+      expect(app.sanitizeLink(unsanitizedLink)).toBe('https://google.com')
+    })
+
+    it('clears out same page id', () => {
+      const unsanitizedLink = 'https://google.com/#invitation'
+      expect(app.sanitizeLink(unsanitizedLink)).toBe('https://google.com/')
+    })
+  })
 })

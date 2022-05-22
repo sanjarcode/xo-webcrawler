@@ -3,7 +3,7 @@
         "editor.codeActionsOnSave": {
             "source.fixAll": true
         },
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
     },
     "eslint.alwaysShowStatus": true,
@@ -17,5 +17,5 @@
     "eslint.options": {
         "ignore": false,
     },
-    "workbench.colorTheme": "One Dark Pro"
+    "workbench.colorTheme": "Cobalt2"
 }
