@@ -62,7 +62,7 @@ describe('App', () => {
 
     it('clears out same page id', () => {
       const unsanitizedLink = 'https://google.com/#invitation'
-      expect(app.sanitizeLink(unsanitizedLink)).toBe('https://google.com')
+      expect(app.sanitizeLink(unsanitizedLink)).toBe('https://google.com/')
     })
   })
 })
