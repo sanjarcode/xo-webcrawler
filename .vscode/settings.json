@@ -17,5 +17,5 @@
     "eslint.options": {
         "ignore": false,
     },
-    "workbench.colorTheme": "One Dark Pro"
+    "workbench.colorTheme": "Cobalt2"
 }
